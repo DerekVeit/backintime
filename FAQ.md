@@ -393,7 +393,7 @@ Each snapshot is stored in a dated subdirectory of the "full snapshot path"
 shown in Settings.  It contains a ``backup`` directory of all the files as well
 as a log of the snapshot's creation and some other details.  Removing the
 snapshot removes this whole directory.  Each snapshot is independent of the
-others, so other snapshots are not affected, but the data of identical files is
+others, so other snapshots are not affected. However, the data of identical files is
 not stored redundantly by multiple snapshots, so removing a snapshot will only
 recover the space used by files that are unique to that snapshot.
 

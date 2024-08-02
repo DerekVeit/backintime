@@ -3,6 +3,7 @@ import pathlib
 import pytest
 
 import config
+import snapshots
 
 
 @pytest.fixture
@@ -21,3 +22,8 @@ def bit_config(tmp_path):
     bit_config.SELECTIONS_MODE = "sorted"
 
     yield bit_config
+
+
+@pytest.fixture
+def bit_snapshot(bit_config):
+    yield snapshots.Snapshots(bit_config)

@@ -1,4 +1,6 @@
 Back In Time
+* Fix: Fix Qt segmentation fault when canceling out of unconfigured BiT (#1095)
+
 Version 1.5.2 (2024-08-06)
 * Fix: Ensure crontab with ending newline (#781)
 * Fix(translation): Correct corrupt translated strings in Basque, Islandic and Spanish causing application crashes (#1828)

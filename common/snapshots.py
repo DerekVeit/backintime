@@ -2228,6 +2228,14 @@ class Snapshots:
 
         Returns:
             (list): Rsync include and exclude options.
+
+        DEREKVEIT 2024-07-31: This method is only called in one place,
+        self.takeSnapshot, which itself is only called in one place in
+        self.backup.  The excludeFolders parameter is unused and could be
+        removed.  The includeFolders parameter is always set simply from
+        self.config.include() in self.backup, so the includeFolders parameter
+        could be eliminated too by getting it from self.config here just as the
+        excludes are.
         """
         # Create exclude patterns string
         rsync_exclude = self.rsyncExclude(excludeFolders)

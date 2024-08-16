@@ -87,14 +87,18 @@ def parse_tree(parent_dir, tree):
 
         if filename.endswith("/"):
             if not prec_dirname.get(parent_dirs[-1], "") < filename:
-                raise ValueError(f"listed out of order after {prec_dirname[parent_dirs[-1]]!r}: {line = }")
+                raise ValueError(
+                    f"listed out of order after {prec_dirname[parent_dirs[-1]]!r}: {line = }"
+                )
             if prec_filename.get(parent_dirs[-1]):
                 raise ValueError(f"directory cannot be listed after file(s): {line = }")
             dir_paths.append(parent_dirs[-1] / filename)
             prec_dirname[parent_dirs[-1]] = filename
         else:
             if not prec_filename.get(parent_dirs[-1], "") < filename:
-                raise ValueError(f"listed out of order after {prec_filename[parent_dirs[-1]]!r}: {line = }")
+                raise ValueError(
+                    f"listed out of order after {prec_filename[parent_dirs[-1]]!r}: {line = }"
+                )
             file_paths.append(parent_dirs[-1] / filename)
             prec_filename[parent_dirs[-1]] = filename
 

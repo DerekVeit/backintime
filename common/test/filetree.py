@@ -6,7 +6,38 @@ import textwrap
 import more_itertools
 
 
+"""
+A "tree" in this module means a multi-line text representation of files and
+directories like this:
+
+    a_tree = '''
+        foo/
+            bar/
+                file-a
+            baz/
+                file-b
+            file-c
+    '''
+
+Directories are distinguished by a trailing slash.  The indentation increment
+must be 4 spaces.  Within a directory the names must be in sorted order but
+with directories listed before files.  The amount of initial indentation is
+arbitrary.
+
+An example of how this might be used to test a backup procedure:
+    1)  empty directories A and B are created.
+    2)  tree_a is defined with a string to specify some files.
+    3)  files_from_tree(A, tree_a)
+    4)  a backup is made from directory A to directory B.
+    5)  tree_b = tree_from_files(B)
+    6)  assert tree_b == normal(tree_a)
+"""
+
+
 def files_from_tree(parent_dir, tree):
+    """
+    Create the directory structure described by `tree` in `parent_dir`.
+    """
     dir_paths, file_paths = parse_tree(parent_dir, tree)
 
     for path in dir_paths:
@@ -17,6 +48,10 @@ def files_from_tree(parent_dir, tree):
 
 
 def parse_tree(parent_dir, tree):
+    """
+    Return the directory paths and the file paths for a directory structure
+    described by `tree` in `parent_dir`.
+    """
     parent_dirs = []
     indents = []
     prec_dirname = {}
@@ -69,11 +104,18 @@ def parse_tree(parent_dir, tree):
 
 
 def split_indent(text):
+    """
+    Return 2 strings, one of the indentation and the other of the remainder.
+    """
     mo = re.match(r"( *)(.*)", text)
     return mo.groups()
 
 
 def tree_from_files(parent_dir):
+    """
+    Create a text representation of the directory structure and files in
+    `parent_dir`.
+    """
     tree_lines = []
 
     files = [("", parent_dir)]
@@ -97,4 +139,7 @@ def tree_from_files(parent_dir):
 
 
 def normal(tree_string):
+    """
+    Normalize the indentation depth and the surrounding whitespace of the tree.
+    """
     return f"\n{textwrap.dedent(tree_string).strip()}\n"

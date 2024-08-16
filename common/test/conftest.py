@@ -10,6 +10,7 @@ import snapshots
 def bit_config(tmp_path):
     config_path = (pathlib.Path(__file__) / "../config").resolve()
     data_path = tmp_path / "data"
+
     bit_config = config.Config(
         str(config_path),   # config file at backintime/common/test/config
         str(data_path),     # real default would be ~/.local/share

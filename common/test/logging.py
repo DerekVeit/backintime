@@ -2,6 +2,17 @@ import datetime
 import os
 import pathlib
 
+"""
+A simple log facility for use in the unit tests.  This is intentionally
+independent of the stdlib-based logging used by the application.
+
+Example:
+
+    from test.logging import log
+
+    def test_foo():
+        log("some message")
+"""
 
 log_path = pathlib.Path("/tmp/bit-unittest.log")
 

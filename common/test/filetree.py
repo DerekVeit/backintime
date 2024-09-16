@@ -87,23 +87,29 @@ def parse_tree(parent_dir, tree):
         else:
             raise ValueError(f"inconsistent tree indentation: {line = }")
 
+        preceding_dirname_here = prec_dirname.get(parent_dirs[-1], "")
+        preceding_filename_here = prec_filename.get(parent_dirs[-1], "")
         if filename.endswith("/"):
-            if not prec_dirname.get(parent_dirs[-1], "") < filename:
+            if not preceding_dirname_here < filename:
                 raise ValueError(
-                    f"listed out of order after {prec_dirname[parent_dirs[-1]]!r}: {line = }"
+                    f"listed out of order after {preceding_dirname_here!r}: {line = }"
                 )
-            if prec_filename.get(parent_dirs[-1]):
+            if preceding_filename_here:
                 raise ValueError(f"directory cannot be listed after file(s): {line = }")
+
             # add the path for this directory
             dir_paths.append(parent_dirs[-1] / filename)
+
             prec_dirname[parent_dirs[-1]] = filename
         else:
-            if not prec_filename.get(parent_dirs[-1], "") < filename:
+            if not preceding_filename_here < filename:
                 raise ValueError(
-                    f"listed out of order after {prec_filename[parent_dirs[-1]]!r}: {line = }"
+                    f"listed out of order after {preceding_filename_here!r}: {line = }"
                 )
+
             # add the path for this file
             file_paths.append(parent_dirs[-1] / filename)
+
             prec_filename[parent_dirs[-1]] = filename
 
         prev_filename = filename

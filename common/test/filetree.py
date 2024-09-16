@@ -50,13 +50,13 @@ def files_from_tree(parent_dir, tree):
 
 def parse_tree(parent_dir, tree):
     """Return the paths described by `tree` in `parent_dir`."""
-    parent_dirs = []
-    indents = []
+    parent_dirs = []    # a stack of ancestral directories at the current line
+    indents = []        # a stack of corresponding indentation strings
     prec_dirname = {}   # most recent directory name in each ancestral directory
     prec_filename = {}  # most recent file name in each ancestral directory
 
-    dir_paths = []
-    file_paths = []
+    dir_paths = []      # full paths of the directories
+    file_paths = []     # full paths of the files
 
     for line in tree.splitlines():
         if not line.strip():

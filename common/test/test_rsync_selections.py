@@ -13,20 +13,36 @@ from test.logging import log
 
 
 def params_for_cases(cases_file):
+    """Provide data for `test_rsyncSuffix*`.
+
+    This parses a text file named by `cases_file`, e.g. "selection_cases", to
+    provide a list of pytest `ParameterSet` objects.
+    """
     cases = (pathlib.Path(__file__).parent / cases_file).read_text()
 
     params = []
+
+    # Each case starts with a colon immediately following a newline.
     for case in (c for c in cases.split("\n:") if c.strip()):
+        # The remainder of the line starting with a colon is the case_name,
+        # which helps identify the test.
         case_name, rest = case.split("\n", 1)
+
+        # A trailing word on the case_name line that can skip the test.
         if "SKIP" in case_name:
             continue
+
+        # Remove trailing comments from the body of the case text.
         rest = "".join(line.split("#")[0].rstrip() + "\n" for line in rest.splitlines())
+
+        # Make a dictionary from the body of the case text.
         specs = dict(
             re.findall(
                 r"(\w+)\n((?: .*\n)*)",
                 textwrap.dedent(rest),
             )
         )
+
         params.append(
             pytest.param(
                 textwrap.dedent(specs["includes"]).splitlines(),
@@ -36,6 +52,7 @@ def params_for_cases(cases_file):
                 id=case_name,
             )
         )
+
     return params
 
 

@@ -25,7 +25,8 @@ def log(message):
     timestamp = datetime.datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")
     with open(log_path, "a") as f:
         if not last_test:
-            f.write("\n")
+            f.write(f"\n{'=' * 80}\n")
         if current_test != last_test:
-            f.write(f"{timestamp} {current_test}\n")
+            f.write(f"\n{'-' * 80}\n")
+            f.write(f"\n{timestamp} {current_test}\n")
         f.write(f"  {message}\n")

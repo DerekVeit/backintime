@@ -163,6 +163,20 @@ def prepend_paths(tmp_path, includes, excludes):
     return includes, excludes
 
 
+def update_config(config, include_paths, exclude_paths):
+    # Partly adapted from MainWindow.btnAddIncludeClicked
+    includes = []
+
+    for item in include_paths:
+        if os.path.isdir(item):
+            includes.append((item, 0))
+        else:
+            includes.append((item, 1))
+
+    config.setInclude(includes)
+    config.setExclude(exclude_paths)
+
+
 def add_includes(config, paths):
     # Adapted from MainWindow.btnAddIncludeClicked
     #include = config.include()

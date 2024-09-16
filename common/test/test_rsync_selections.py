@@ -28,9 +28,17 @@ def params_for_cases(cases_file, selections_modes):
             # which helps identify the test.
             case_name, rest = case.split("\n", 1)
 
-            # A trailing word on the case_name line that can skip the test.
+            # Some trailing words on the case_name line that can skip the test.
             if "SKIP" in case_name:
                 continue
+            elif "sorted-only" in case_name:
+                case_name = case_name.rsplit(None, 1)[0]
+                if selections_mode != "sorted":
+                    continue
+            elif "original-fails" in case_name:
+                case_name = case_name.rsplit(None, 1)[0]
+                if selections_mode == "original":
+                    continue
 
             # Remove trailing comments from the body of the case text.
             rest = "".join(line.split("#")[0].rstrip() + "\n" for line in rest.splitlines())

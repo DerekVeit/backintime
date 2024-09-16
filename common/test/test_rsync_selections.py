@@ -144,8 +144,8 @@ def test_rsyncSuffix__raises(
 
     expected_exception, expected_message = expected
 
-    log("\n  ".join(p for p in includes))
-    log("\n  ".join(p for p in excludes))
+    log("includes\n    " + "\n    ".join(p for p in includes))
+    log("excludes\n    " + "\n    ".join(p for p in excludes))
 
     filetree.files_from_tree(files_root, files_tree)
 

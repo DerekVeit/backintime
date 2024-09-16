@@ -52,8 +52,8 @@ def parse_tree(parent_dir, tree):
     """Return the paths described by `tree` in `parent_dir`."""
     parent_dirs = []
     indents = []
-    prec_dirname = {}
-    prec_filename = {}
+    prec_dirname = {}   # most recent directory name in each ancestral directory
+    prec_filename = {}  # most recent file name in each ancestral directory
 
     dir_paths = []
     file_paths = []
@@ -67,15 +67,19 @@ def parse_tree(parent_dir, tree):
         if not re.match(r"^(?:    )*$", indent):
             raise ValueError(f"indentation must be of 4-space increments: {line = }")
         if not indents:
+            # first iteration
             indents.append(indent)
             parent_dirs.append(pathlib.Path(parent_dir))
         elif indent == indents[-1]:
+            # the same indentation level and same parent directory
             pass
         elif indent in indents[:-1]:
+            # a previous indentation level and corresponding parent directory
             index = indents.index(indent)
             indents = indents[: index + 1]
             parent_dirs = parent_dirs[: index + 1]
         elif len(indent) > len(indents[-1]):
+            # should be reading the contents of a directory just seen
             if not prev_filename.endswith("/"):
                 raise ValueError(f"indentation without directory: {line = }")
             indents.append(indent)
@@ -90,6 +94,7 @@ def parse_tree(parent_dir, tree):
                 )
             if prec_filename.get(parent_dirs[-1]):
                 raise ValueError(f"directory cannot be listed after file(s): {line = }")
+            # add the path for this directory
             dir_paths.append(parent_dirs[-1] / filename)
             prec_dirname[parent_dirs[-1]] = filename
         else:
@@ -97,6 +102,7 @@ def parse_tree(parent_dir, tree):
                 raise ValueError(
                     f"listed out of order after {prec_filename[parent_dirs[-1]]!r}: {line = }"
                 )
+            # add the path for this file
             file_paths.append(parent_dirs[-1] / filename)
             prec_filename[parent_dirs[-1]] = filename
 

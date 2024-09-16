@@ -90,7 +90,8 @@ def test_rsyncSuffix(
     files_root = tmp_path / "files"
     files_root.mkdir()
 
-    includes, excludes = prepend_paths(files_root, includes, excludes)
+    includes = list(prepend_paths(files_root, includes))
+    excludes = list(prepend_paths(files_root, excludes))
 
     log(f"{files_tree =!s}")
     log(f"{expected_tree =!s}")
@@ -140,7 +141,8 @@ def test_rsyncSuffix__raises(
     files_root = tmp_path / "files"
     files_root.mkdir()
 
-    includes, excludes = prepend_paths(files_root, includes, excludes)
+    includes = list(prepend_paths(files_root, includes))
+    excludes = list(prepend_paths(files_root, excludes))
 
     expected_exception, expected_message = expected
 
@@ -159,10 +161,15 @@ def test_rsyncSuffix__raises(
         bit_snapshot.backup()
 
 
-def prepend_paths(tmp_path, includes, excludes):
-    includes = [f"{tmp_path}{p}" if p.startswith("/") else p for p in includes]
-    excludes = [f"{tmp_path}{p}" if p.startswith("/") else p for p in excludes]
-    return includes, excludes
+def prepend_paths(tmp_path, paths):
+    """Prefix any absolute paths with the temporary directory path."""
+    for path in paths:
+        if path == "/":
+            yield f"{tmp_path}"
+        elif path.startswith("/"):
+            yield f"{tmp_path}{path}"
+        else:
+            yield f"{path}"
 
 
 def update_config(config, include_paths, exclude_paths):

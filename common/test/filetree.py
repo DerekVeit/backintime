@@ -19,10 +19,13 @@ directories like this:
             file-c
     '''
 
+This is to help make backup tests that are easy to read and write and are clear
+in their expectations and results.
+
 Directories are distinguished by a trailing slash.  The indentation increment
 must be 4 spaces.  Within a directory the names must be in sorted order but
-with directories listed before files.  The amount of initial indentation is
-arbitrary.
+with directories listed before files.  The amount of initial indentation and
+the leading and trailing whitespace of the whole string is arbitrary.
 
 An example of how this might be used to test a backup procedure:
     1)  empty directories A and B are created.
@@ -35,9 +38,7 @@ An example of how this might be used to test a backup procedure:
 
 
 def files_from_tree(parent_dir, tree):
-    """
-    Create the directory structure described by `tree` in `parent_dir`.
-    """
+    """Create in `parent_dir` the structure described by `tree`."""
     dir_paths, file_paths = parse_tree(parent_dir, tree)
 
     for path in dir_paths:
@@ -48,10 +49,7 @@ def files_from_tree(parent_dir, tree):
 
 
 def parse_tree(parent_dir, tree):
-    """
-    Return the directory paths and the file paths for a directory structure
-    described by `tree` in `parent_dir`.
-    """
+    """Return the paths described by `tree` in `parent_dir`."""
     parent_dirs = []
     indents = []
     prec_dirname = {}
@@ -108,18 +106,13 @@ def parse_tree(parent_dir, tree):
 
 
 def split_indent(text):
-    """
-    Return 2 strings, one of the indentation and the other of the remainder.
-    """
+    """Return the indentation and the remainder of the string as 2 strings."""
     mo = re.match(r"( *)(.*)", text)
     return mo.groups()
 
 
 def tree_from_files(parent_dir):
-    """
-    Create a text representation of the directory structure and files in
-    `parent_dir`.
-    """
+    """Create a text representation of the file structure in `parent_dir`."""
     tree_lines = []
 
     files = [("", parent_dir)]
@@ -143,7 +136,5 @@ def tree_from_files(parent_dir):
 
 
 def normal(tree_string):
-    """
-    Normalize the indentation depth and the surrounding whitespace of the tree.
-    """
+    """Normalize indentation depth and surrounding whitespace of the tree."""
     return f"\n{textwrap.dedent(tree_string).strip()}\n"

@@ -171,17 +171,3 @@ def update_config(config, include_paths, exclude_paths):
 
     config.setInclude(includes)
     config.setExclude(exclude_paths)
-
-
-def add_includes(config, paths):
-    # Adapted from MainWindow.btnAddIncludeClicked
-    #include = config.include()
-    include = []
-
-    for item in paths:
-        if os.path.isdir(item):
-            include.append((item, 0))
-        else:
-            include.append((item, 1))
-
-    config.setInclude(include)

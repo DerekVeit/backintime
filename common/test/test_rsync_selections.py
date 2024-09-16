@@ -94,10 +94,8 @@ def test_rsyncSuffix(
 
     filetree.files_from_tree(tmp_path, files_tree)
 
-    add_includes(bit_snapshot.config, includes)
+    update_config(bit_snapshot.config, includes, excludes)
     log(f"{bit_snapshot.config.include() = }")
-
-    bit_snapshot.config.setExclude(bit_snapshot.config.exclude() + excludes)
     log(f"{bit_snapshot.config.exclude() = }")
 
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
@@ -145,10 +143,8 @@ def test_rsyncSuffix__raises(
 
     filetree.files_from_tree(tmp_path, files_tree)
 
-    add_includes(bit_snapshot.config, includes)
+    update_config(bit_snapshot.config, includes, excludes)
     log(f"{bit_snapshot.config.include() = }")
-
-    bit_snapshot.config.setExclude(bit_snapshot.config.exclude() + excludes)
     log(f"{bit_snapshot.config.exclude() = }")
 
     bit_snapshot.config.SELECTIONS_MODE = selections_mode

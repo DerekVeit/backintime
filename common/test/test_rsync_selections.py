@@ -172,6 +172,54 @@ def prepend_paths(tmp_path, paths):
             yield f"{path}"
 
 
+@pytest.mark.parametrize(
+    "includes, excludes, files_tree, expected_tree, selections_mode",
+    params_for_cases("selection_root_cases", ["original", "sorted"]),
+)
+def test_rsyncSuffix__root(
+    includes,
+    excludes,
+    files_tree,
+    expected_tree,
+    selections_mode,
+    tmp_path,
+    bit_snapshot,
+):
+    """Having the root directory `/` as an included directory."""
+
+
+    files_root = "/"
+
+    log(f"{files_tree =!s}")
+    log(f"{expected_tree =!s}")
+
+    update_config(bit_snapshot.config, includes, excludes)
+    log(f"{bit_snapshot.config.include() = }")
+    log(f"{bit_snapshot.config.exclude() = }")
+
+    bit_snapshot.config.SELECTIONS_MODE = selections_mode
+
+    bit_snapshot.backup()
+
+    if hasattr(bit_snapshot, "_rsync_cmd_args"):
+        cmd = bit_snapshot._rsync_cmd_args
+        log("rsync command arguments:")
+        log("\n    ".join(arg for arg in cmd))
+
+    last_snapshot = snapshots.lastSnapshot(bit_snapshot.config)
+
+    try:
+        backup_path = next((tmp_path / "snapshots").glob(f"**/{last_snapshot}/backup"))
+    except StopIteration:
+        results_tree = filetree.normal("NONE")
+    else:
+        results_path = backup_path / str(files_root).strip("/")
+        log(f"{results_path = }")
+        results_tree = filetree.tree_from_files(results_path)
+
+    assert results_tree == expected_tree
+
+
 def update_config(config, include_paths, exclude_paths):
     # Partly adapted from MainWindow.btnAddIncludeClicked
     includes = []

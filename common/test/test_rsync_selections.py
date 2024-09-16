@@ -87,12 +87,15 @@ def test_rsyncSuffix(
     tmp_path,
     bit_snapshot,
 ):
-    includes, excludes = prepend_paths(tmp_path, includes, excludes)
+    files_root = tmp_path / "files"
+    files_root.mkdir()
+
+    includes, excludes = prepend_paths(files_root, includes, excludes)
 
     log(f"{files_tree =!s}")
     log(f"{expected_tree =!s}")
 
-    filetree.files_from_tree(tmp_path, files_tree)
+    filetree.files_from_tree(files_root, files_tree)
 
     update_config(bit_snapshot.config, includes, excludes)
     log(f"{bit_snapshot.config.include() = }")
@@ -114,7 +117,7 @@ def test_rsyncSuffix(
     except StopIteration:
         results_tree = filetree.normal("NONE")
     else:
-        results_path = backup_path / str(tmp_path).strip("/")
+        results_path = backup_path / str(files_root).strip("/")
         log(f"{results_path = }")
         results_tree = filetree.tree_from_files(results_path)
 
@@ -134,14 +137,17 @@ def test_rsyncSuffix__raises(
     tmp_path,
     bit_snapshot,
 ):
-    includes, excludes = prepend_paths(tmp_path, includes, excludes)
+    files_root = tmp_path / "files"
+    files_root.mkdir()
+
+    includes, excludes = prepend_paths(files_root, includes, excludes)
 
     expected_exception, expected_message = expected
 
     log("\n  ".join(p for p in includes))
     log("\n  ".join(p for p in excludes))
 
-    filetree.files_from_tree(tmp_path, files_tree)
+    filetree.files_from_tree(files_root, files_tree)
 
     update_config(bit_snapshot.config, includes, excludes)
     log(f"{bit_snapshot.config.include() = }")

@@ -11,12 +11,10 @@ from test import filetree
 from test.logging import log
 
 
-cases = (pathlib.Path(__file__).parent / "selection_cases").read_text()
 
-raise_cases = (pathlib.Path(__file__).parent / "selection_raise_cases").read_text()
+def params_for_cases(cases_file):
+    cases = (pathlib.Path(__file__).parent / cases_file).read_text()
 
-
-def params_for_cases(cases):
     params = []
     for case in (c for c in cases.split("\n:") if c.strip()):
         case_name, rest = case.split("\n", 1)
@@ -41,7 +39,9 @@ def params_for_cases(cases):
     return params
 
 
-def params_for_raise_cases(cases):
+def params_for_raise_cases(cases_file):
+    cases = (pathlib.Path(__file__).parent / cases_file).read_text()
+
     params = []
     for case in (c for c in cases.split("\n:") if c.strip()):
         case_name, rest = case.split("\n", 1)
@@ -72,7 +72,7 @@ def params_for_raise_cases(cases):
 
 @pytest.mark.parametrize(
     "includes, excludes, files_tree, expected_tree",
-    params_for_cases(cases),
+    params_for_cases("selection_cases"),
 )
 def test_rsyncSuffix(
     includes, excludes, files_tree, expected_tree, tmp_path, bit_snapshot
@@ -113,7 +113,7 @@ def test_rsyncSuffix(
 
 @pytest.mark.parametrize(
     "includes, excludes, files_tree, expected_exception, expected_message",
-    params_for_raise_cases(raise_cases),
+    params_for_raise_cases("selection_raise_cases"),
 )
 def test_rsyncSuffix__raises(
     includes, excludes, files_tree, expected_exception, expected_message, tmp_path, bit_snapshot

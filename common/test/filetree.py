@@ -50,13 +50,19 @@ def parse_tree(parent_dir: str | Path, tree: str) -> tuple[list[Path], list[Path
     """Return the paths described by `tree` in `parent_dir`."""
     parent_path = Path(parent_dir)
 
-    parent_dirs: list[Path] = []        # a stack of ancestral directories at the current line
-    indents: list[str] = []             # a stack of corresponding indentation strings
-    prec_dirname: dict[Path, str] = {}  # most recent directory name in each ancestral directory
-    prec_filename: dict[Path, str] = {} # most recent file name in each ancestral directory
+    # a stack of ancestral directories at the current line
+    parent_dirs: list[Path] = []
+    # a stack of corresponding indentation strings
+    indents: list[str] = []
+    # most recent directory name in each ancestral directory
+    prec_dirname: dict[Path, str] = {}
+    # most recent file name in each ancestral directory
+    prec_filename: dict[Path, str] = {}
 
-    dir_paths = []      # full paths of the directories
-    file_paths = []     # full paths of the files
+    # full paths of the directories
+    dir_paths = []
+    # full paths of the files
+    file_paths = []
 
     prev_filename: str = ""
 

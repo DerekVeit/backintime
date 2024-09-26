@@ -1,9 +1,6 @@
-import itertools
 import pathlib
 import re
 import textwrap
-
-import more_itertools
 
 
 """
@@ -124,29 +121,33 @@ def split_indent(text):
 
 
 def tree_from_files(parent_dir):
-    """Create a text representation of the file structure in `parent_dir`."""
+    """Return a tree describing the contents of `parent_dir`."""
+    parent_path = pathlib.Path(parent_dir)
     tree_lines = []
+    for path in sort_paths(parent_path.rglob("*")):
+        if path == parent_path:
+            continue
+        indent = "    " * (len(path.parents) - 1)
+        name = path.name + ("/" if path.is_dir() else "")
+        tree_lines.append(indent + name)
 
-    files = [("", parent_dir)]
-    while files:
-        indent, path = files.pop()
-        if path.is_dir():
-            tree_lines.append(f"{indent}{path.name}/\n")
-            subfiles, subdirs = more_itertools.partition(
-                lambda p: p.is_dir(), path.iterdir()
-            )
-            files.extend(
-                (indent + "    ", p)
-                for p in itertools.chain.from_iterable(
-                    (sorted(subs, reverse=True) for subs in (subfiles, subdirs))
-                )
-            )
-        else:
-            tree_lines.append(f"{indent}{path.name}\n")
-
-    return normal("".join(tree_lines[1:]))
+    return "\n".join(tree_lines)
 
 
 def normal(tree_string):
     """Normalize indentation depth and surrounding whitespace of the tree."""
     return f"\n{textwrap.dedent(tree_string).strip()}\n"
+
+
+def sort_paths(paths):
+    """Sort a list of paths.
+
+    Within each directory, subdirectories are listed before files.
+    """
+    return sorted(
+        paths,
+        key=lambda path: (
+            [(False, part) for part in path.parts[:-1]]
+            + [(not path.is_dir(), path.name)]
+        ),
+    )

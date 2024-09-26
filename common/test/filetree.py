@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 import textwrap
+from typing import Iterable
 
 
 """
@@ -34,7 +35,7 @@ An example of how this might be used to test a backup procedure:
 """
 
 
-def files_from_tree(parent_dir, tree):
+def files_from_tree(parent_dir: str | Path, tree: str) -> None:
     """Create in `parent_dir` the structure described by `tree`."""
     dir_paths, file_paths = parse_tree(parent_dir, tree)
 
@@ -45,17 +46,19 @@ def files_from_tree(parent_dir, tree):
         path.touch()
 
 
-def parse_tree(parent_dir, tree):
+def parse_tree(parent_dir: str | Path, tree: str) -> tuple[list[Path], list[Path]]:
     """Return the paths described by `tree` in `parent_dir`."""
     parent_path = Path(parent_dir)
 
-    parent_dirs = []    # a stack of ancestral directories at the current line
-    indents = []        # a stack of corresponding indentation strings
-    prec_dirname = {}   # most recent directory name in each ancestral directory
-    prec_filename = {}  # most recent file name in each ancestral directory
+    parent_dirs: list[Path] = []        # a stack of ancestral directories at the current line
+    indents: list[str] = []             # a stack of corresponding indentation strings
+    prec_dirname: dict[Path, str] = {}  # most recent directory name in each ancestral directory
+    prec_filename: dict[Path, str] = {} # most recent file name in each ancestral directory
 
     dir_paths = []      # full paths of the directories
     file_paths = []     # full paths of the files
+
+    prev_filename: str = ""
 
     for line in tree.splitlines():
         if not line.strip():
@@ -116,13 +119,14 @@ def parse_tree(parent_dir, tree):
     return dir_paths, file_paths
 
 
-def split_indent(text):
+def split_indent(text: str) -> tuple[str, str]:
     """Return the indentation and the remainder of the string as 2 strings."""
     mo = re.match(r"( *)(.*)", text)
-    return mo.groups()
+    indent, remainder = mo.groups()  # type: ignore [union-attr]
+    return indent, remainder
 
 
-def tree_from_files(parent_dir):
+def tree_from_files(parent_dir: str | Path) -> str:
     """Return a tree describing the contents of `parent_dir`."""
     parent_path = Path(parent_dir)
     tree_lines = []
@@ -136,12 +140,12 @@ def tree_from_files(parent_dir):
     return "\n".join(tree_lines)
 
 
-def normal(tree_string):
+def normal(tree_string: str) -> str:
     """Normalize indentation depth and surrounding whitespace of the tree."""
     return f"\n{textwrap.dedent(tree_string).strip()}\n"
 
 
-def sort_paths(paths):
+def sort_paths(paths: Iterable[Path]) -> list[Path]:
     """Sort a list of paths.
 
     Within each directory, subdirectories are listed before files.

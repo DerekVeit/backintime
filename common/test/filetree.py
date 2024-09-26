@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 import re
 import textwrap
 
@@ -66,7 +66,7 @@ def parse_tree(parent_dir, tree):
         if not indents:
             # first iteration
             indents.append(indent)
-            parent_dirs.append(pathlib.Path(parent_dir))
+            parent_dirs.append(Path(parent_dir))
         elif indent == indents[-1]:
             # the same indentation level and same parent directory
             pass
@@ -122,7 +122,7 @@ def split_indent(text):
 
 def tree_from_files(parent_dir):
     """Return a tree describing the contents of `parent_dir`."""
-    parent_path = pathlib.Path(parent_dir)
+    parent_path = Path(parent_dir)
     tree_lines = []
     for path in sort_paths(parent_path.rglob("*")):
         if path == parent_path:

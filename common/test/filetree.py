@@ -74,6 +74,7 @@ def parse_tree(parent_dir: str | Path, tree: str) -> tuple[list[Path], list[Path
 
         if not re.match(r"^(?:    )*$", indent):
             raise ValueError(f"indentation must be of 4-space increments: {line = }")
+
         if not indents:
             # first iteration
             indents.append(indent)

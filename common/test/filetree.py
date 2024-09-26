@@ -47,6 +47,8 @@ def files_from_tree(parent_dir, tree):
 
 def parse_tree(parent_dir, tree):
     """Return the paths described by `tree` in `parent_dir`."""
+    parent_path = Path(parent_dir)
+
     parent_dirs = []    # a stack of ancestral directories at the current line
     indents = []        # a stack of corresponding indentation strings
     prec_dirname = {}   # most recent directory name in each ancestral directory
@@ -66,7 +68,7 @@ def parse_tree(parent_dir, tree):
         if not indents:
             # first iteration
             indents.append(indent)
-            parent_dirs.append(Path(parent_dir))
+            parent_dirs.append(parent_path)
         elif indent == indents[-1]:
             # the same indentation level and same parent directory
             pass

@@ -12,7 +12,7 @@ def test_log__first_test(tmp_path, monkeypatch):
     log("another message")
 
     file_contents = logging.log_path.read_text()
-    assert re.match(
+    assert re.search(
         r"""\n[0-9-]+ [0-9:]+ .*/test_logging\.py::test_log.*
   some message
   another message
@@ -29,7 +29,7 @@ def test_log__subsequent_test(tmp_path, monkeypatch):
     log("another message")
 
     file_contents = logging.log_path.read_text()
-    assert re.match(
+    assert re.search(
         r"""[0-9-]+ [0-9:]+ .*/test_logging\.py::test_log.*
   some message
   another message

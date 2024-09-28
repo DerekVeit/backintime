@@ -84,7 +84,7 @@ def test_tree_from_files(tmp_path):
     """
     filetree.files_from_tree(tmp_path, tree)
     result = filetree.tree_from_files(tmp_path)
-    assert filetree.normal(result) == filetree.normal(tree)
+    assert result == filetree.normal(tree)
 
 
 def test_tree_from_files__raise_dir_late(tmp_path):

@@ -136,15 +136,16 @@ def split_indent(text: str) -> tuple[str, str]:
 def tree_from_files(parent_dir: str | Path) -> str:
     """Return a tree describing the contents of `parent_dir`."""
     parent_path = Path(parent_dir)
+    initial_depth = len(parent_path.parts)
     tree_lines = []
     for path in sort_paths(parent_path.rglob("*")):
         if path == parent_path:
             continue
-        indent = "    " * (len(path.parents) - 1)
+        indent = "    " * (len(path.parents) - initial_depth)
         name = path.name + ("/" if path.is_dir() else "")
         tree_lines.append(indent + name)
 
-    return "\n".join(tree_lines)
+    return "\n" + "\n".join(tree_lines) + "\n"
 
 
 def normal(tree_string: str) -> str:

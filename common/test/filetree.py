@@ -20,10 +20,17 @@ directories like this:
 This is to help make backup tests that are easy to read and write and are clear
 in their expectations and results.
 
-Directories are distinguished by a trailing slash.  The indentation increment
-must be 4 spaces.  Within a directory the names must be in sorted order but
-with directories listed before files.  The amount of initial indentation and
-the leading and trailing whitespace of the whole string is arbitrary.
+Key features:
+- Directories are distinguished by a trailing slash
+- Indentation increment must be 4 spaces
+- Within a directory, names must be sorted with directories before files
+- Initial indentation and leading and trailing whitespace are arbitrary
+- Empty directories are allowed
+
+Main functions:
+- files_from_tree: Create a file structure from a tree representation
+- tree_from_files: Generate a tree representation from an existing file structure
+- normal: Normalize the indentation and whitespace of a tree string
 
 An example of how this might be used to test a backup procedure:
     1)  empty directories A and B are created.

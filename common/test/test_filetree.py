@@ -1,9 +1,10 @@
+from pathlib import Path
 import pytest
 
 from test import filetree
 
 
-def test_files_from_tree(tmp_path):
+def test_files_from_tree(tmp_path: Path) -> None:
     tree = """
         var/
             log/
@@ -19,7 +20,7 @@ def test_files_from_tree(tmp_path):
     assert (tmp_path / "var/some_file").is_file()
 
 
-def test_files_from_tree__indent_not4sp(tmp_path):
+def test_files_from_tree__indent_not4sp(tmp_path: Path) -> None:
     tree = """
        var
     """
@@ -30,7 +31,7 @@ def test_files_from_tree__indent_not4sp(tmp_path):
         filetree.files_from_tree(tmp_path, tree)
 
 
-def test_files_from_tree__indent_not_in_dir(tmp_path):
+def test_files_from_tree__indent_not_in_dir(tmp_path: Path) -> None:
     tree = """
         var
             some_file
@@ -42,7 +43,7 @@ def test_files_from_tree__indent_not_in_dir(tmp_path):
         filetree.files_from_tree(tmp_path, tree)
 
 
-def test_files_from_tree__indent_inconsistent(tmp_path):
+def test_files_from_tree__indent_inconsistent(tmp_path: Path) -> None:
     tree = """
         var
     some_file
@@ -63,7 +64,7 @@ def test_files_from_tree__indent_inconsistent(tmp_path):
         ("", ("", "")),
     ],
 )
-def test_split_indent(text, expected):
+def test_split_indent(text: str, expected: tuple[str, str]) -> None:
     assert filetree.split_indent(text) == expected
 
 
@@ -97,13 +98,13 @@ def test_split_indent(text, expected):
     ]
 )
 # fmt: on
-def test_tree_from_files(tmp_path, tree):
+def test_tree_from_files(tmp_path: Path, tree: str) -> None:
     filetree.files_from_tree(tmp_path, tree)
     result = filetree.tree_from_files(tmp_path)
     assert result == filetree.normal(tree)
 
 
-def test_tree_from_files__raise_dir_late(tmp_path):
+def test_tree_from_files__raise_dir_late(tmp_path: Path) -> None:
     tree = """
         var/
             foo
@@ -113,7 +114,7 @@ def test_tree_from_files__raise_dir_late(tmp_path):
         filetree.files_from_tree(tmp_path, tree)
 
 
-def test_tree_from_files__raise_dir_order(tmp_path):
+def test_tree_from_files__raise_dir_order(tmp_path: Path) -> None:
     tree = """
         var/
             log/
@@ -123,7 +124,7 @@ def test_tree_from_files__raise_dir_order(tmp_path):
         filetree.files_from_tree(tmp_path, tree)
 
 
-def test_tree_from_files__raise_file_order(tmp_path):
+def test_tree_from_files__raise_file_order(tmp_path: Path) -> None:
     tree = """
         var/
             foo
@@ -158,7 +159,7 @@ a/
         a1""", id='3'),
     ]
 )
-def test_normal(input_tree):
+def test_normal(input_tree: str) -> None:
     assert filetree.normal(input_tree) == """
 a/
     b/

@@ -67,8 +67,11 @@ def test_split_indent(text, expected):
     assert filetree.split_indent(text) == expected
 
 
-def test_tree_from_files(tmp_path):
-    tree = """
+# fmt: off
+@pytest.mark.parametrize(
+    "tree",
+    [
+        pytest.param("""
         var/
             lib/
                 libsubdir/
@@ -81,7 +84,20 @@ def test_tree_from_files(tmp_path):
                 syslog
             some_file
             temp_file
-    """
+        """, id='1'),
+        pytest.param("""
+        """, id='2'),
+        pytest.param("""
+        .hidden_file1
+        file2
+        """, id='3'),
+        pytest.param("""
+        dir1/
+        """, id='4'),
+    ]
+)
+# fmt: on
+def test_tree_from_files(tmp_path, tree):
     filetree.files_from_tree(tmp_path, tree)
     result = filetree.tree_from_files(tmp_path)
     assert result == filetree.normal(tree)

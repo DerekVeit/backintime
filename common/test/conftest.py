@@ -7,9 +7,19 @@ import config
 import snapshots
 import tools
 
+"""
+"conftest.py" is a standard pytest convention for providing test configuration.
+The location of the file determines the scope of its application.
+
+This file provides fixtures as per https://pytest.org/en/latest/how-to/fixtures.html
+
+This module is tested by test_fixtures.py
+"""
+
 
 @pytest.fixture
 def bit_config(tmp_path: Path) -> Generator[config.Config, None, None]:
+    """Fixture for a config.Config object."""
     config_path = (Path(__file__) / "../config").resolve()
     data_path = tmp_path / "data"
 
@@ -38,4 +48,5 @@ def bit_config(tmp_path: Path) -> Generator[config.Config, None, None]:
 def bit_snapshot(
     bit_config: config.Config,
 ) -> Generator[snapshots.Snapshots, None, None]:
+    """Fixture for a snapshots.Snapshots object."""
     yield snapshots.Snapshots(bit_config)  # type: ignore[no-untyped-call]

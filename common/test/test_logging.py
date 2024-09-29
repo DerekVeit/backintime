@@ -8,6 +8,7 @@ from test.logging import log
 
 
 def test_log__first_test(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the initial log entry for a test."""
     monkeypatch.setattr(logging, "log_path", tmp_path / "bit-unittest.log")
     monkeypatch.setattr(logging, "current_test", "")
 
@@ -25,6 +26,7 @@ def test_log__first_test(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_log__subsequent_test(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test a subsequent log entry for a test."""
     monkeypatch.setattr(logging, "log_path", tmp_path / "bit-unittest.log")
     monkeypatch.setattr(logging, "current_test", "test_other.py::test_other (call)")
 

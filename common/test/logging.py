@@ -20,6 +20,11 @@ current_test = ""
 
 
 def log(message: str) -> None:
+    """Append a message to the log file.
+
+    This also writes a line of = before the first log message and a line
+    of - and the test name before each new test case.
+    """
     global current_test
     last_test, current_test = current_test, os.getenv("PYTEST_CURRENT_TEST", "--")
     timestamp = datetime.datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")

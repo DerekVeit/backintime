@@ -73,27 +73,27 @@ def test_split_indent(text: str, expected: tuple[str, str]) -> None:
     "tree",
     [
         pytest.param("""
-        var/
-            lib/
-                libsubdir/
-                    sub_file
-                some_lib
-            log/
-                box/
-                    contents
-                another
-                syslog
-            some_file
-            temp_file
+            var/
+                lib/
+                    libsubdir/
+                        sub_file
+                    some_lib
+                log/
+                    box/
+                        contents
+                    another
+                    syslog
+                some_file
+                temp_file
         """, id='1'),
         pytest.param("""
         """, id='2'),
         pytest.param("""
-        .hidden_file1
-        file2
+            .hidden_file1
+            file2
         """, id='3'),
         pytest.param("""
-        dir1/
+            dir1/
         """, id='4'),
     ]
 )

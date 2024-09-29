@@ -1,10 +1,13 @@
+from pathlib import Path
 import re
+
+import pytest
 
 from test import logging
 from test.logging import log
 
 
-def test_log__first_test(tmp_path, monkeypatch):
+def test_log__first_test(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(logging, "log_path", tmp_path / "bit-unittest.log")
     monkeypatch.setattr(logging, "current_test", "")
 
@@ -21,7 +24,7 @@ def test_log__first_test(tmp_path, monkeypatch):
     )
 
 
-def test_log__subsequent_test(tmp_path, monkeypatch):
+def test_log__subsequent_test(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(logging, "log_path", tmp_path / "bit-unittest.log")
     monkeypatch.setattr(logging, "current_test", "test_other.py::test_other (call)")
 

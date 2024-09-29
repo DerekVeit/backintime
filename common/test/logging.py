@@ -19,7 +19,7 @@ log_path = pathlib.Path("/tmp/bit-unittest.log")
 current_test = ""
 
 
-def log(message):
+def log(message: str) -> None:
     global current_test
     last_test, current_test = current_test, os.getenv("PYTEST_CURRENT_TEST", "--")
     timestamp = datetime.datetime.now().strftime(r"%Y-%m-%d %H:%M:%S")

@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 
 import pytest
 
@@ -9,7 +9,7 @@ import tools
 
 @pytest.fixture
 def bit_config(tmp_path):
-    config_path = (pathlib.Path(__file__) / "../config").resolve()
+    config_path = (Path(__file__) / "../config").resolve()
     data_path = tmp_path / "data"
 
     bit_config = config.Config(

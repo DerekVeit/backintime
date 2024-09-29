@@ -59,6 +59,8 @@ def params_for_cases(cases_file, selections_modes):
                 expected_exception = {**__builtins__, **globals()}[expected_exception]
                 expected_message = expected_message.strip()
                 expected = expected_exception, expected_message
+            else:
+                raise ValueError(f"Missing \"expected_tree\" or \"raises\" key in {case_name}")
 
             params.append(
                 pytest.param(

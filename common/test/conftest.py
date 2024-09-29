@@ -14,8 +14,8 @@ def bit_config(tmp_path: Path) -> Generator[config.Config, None, None]:
     data_path = tmp_path / "data"
 
     bit_config = config.Config(
-        str(config_path),   # config file at backintime/common/test/config
-        str(data_path),     # real default would be ~/.local/share
+        str(config_path),  # config file at backintime/common/test/config
+        str(data_path),  # real default would be ~/.local/share
     )  # type: ignore[no-untyped-call]
 
     snapshots_path = tmp_path / "snapshots"
@@ -26,7 +26,8 @@ def bit_config(tmp_path: Path) -> Generator[config.Config, None, None]:
         host_user_profile=bit_config.hostUserProfile(),  # type: ignore[no-untyped-call]
         mode=bit_config.snapshotsMode(),  # type: ignore[no-untyped-call]
         copy_links=bit_config.copyLinks(),  # type: ignore[no-untyped-call]
-        error_handler=bit_config.notifyError)
+        error_handler=bit_config.notifyError,
+    )
 
     bit_config.SELECTIONS_MODE = "sorted"  # type: ignore[attr-defined]
 
@@ -34,5 +35,7 @@ def bit_config(tmp_path: Path) -> Generator[config.Config, None, None]:
 
 
 @pytest.fixture
-def bit_snapshot(bit_config: config.Config) -> Generator[snapshots.Snapshots, None, None]:
+def bit_snapshot(
+    bit_config: config.Config,
+) -> Generator[snapshots.Snapshots, None, None]:
     yield snapshots.Snapshots(bit_config)  # type: ignore[no-untyped-call]

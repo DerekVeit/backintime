@@ -2265,6 +2265,122 @@ class Snapshots:
 
         return ret
 
+    def pathSelections(self):
+        """Return data for the --include= and --exclude= options of rsync.
+
+        Returns a list of (<option>, <path>) where <option> is "include" or
+        "exclude".
+
+        When rsync considers a path, the first matching include or exclude rule
+        is applied.  The order of the options matters when there is both an
+        include rule and an exclude rule with a pattern that would match.
+
+        The items are reverse sorted so that rules fro more-specific paths
+        come first, e.g.:
+            /var/log/My App
+            /var/log/My*
+            /var/log
+            /var/*/something
+            /var/*.log
+            /var/*
+            /var/**
+            /var
+        """
+        selections = set()
+
+        # Some exclude patterns represent relative paths.  For these to have
+        # the correct priority in the sorted paths for rsync options, they will
+        # be converted into absolute paths.
+        relative_excludes = set()
+        for path in self.config.exclude():
+            if path == "/":
+                selections.add(("exclude", "/**"))
+            elif path.startswith("/"):
+                selections.add(("exclude", path))
+            else:
+                relative_excludes.add(path)
+
+        include_paths = set([path for path, _ in self.config.include()])
+
+        for path, path_type in self.config.include():
+            is_dir = path_type == 0
+
+            selections.add(("include", path))
+
+            if is_dir:
+                # For concatenations with a slash below.
+                if path == "/":
+                    path = ""
+
+                # For the user, including a directory implies also including
+                # anything in it, but rsync does not work that way, so here we
+                # also specify to include "anything in it".
+                selections.add(("include", f"{path}/**"))
+
+                # Add the relative paths as absolute paths.
+                for relative_path in relative_excludes:
+                    if f"{path}/{relative_path}" not in include_paths:
+                        selections.add(("exclude", f"{path}/{relative_path}"))
+                    selections.add(("exclude", f"{path}/**/{relative_path}"))
+
+            # Since we exclude by default (--exclude=*), we must ensure that
+            # each parent directory is also explicitly included. Otherwise
+            # rsync will skip the parent and not find this path. These are not
+            # being given the <path>/** pattern as above, so this does not
+            # implicitly include other contents of the parent directories.
+            while True:
+                path, tail = os.path.split(path)
+                if not tail:
+                    break
+                selections.add(("include", path))
+
+                # If the parent directory was directly excluded, let the
+                # directory itself be an exception to the "directory and its
+                # contents" implied by that, and only exclude the contents.
+                if ("exclude", path) in selections:
+                    selections.remove(("exclude", path))
+                    selections.add(("exclude", f"{path}/**"))
+
+                # Add the relative paths as absolute paths.
+                if path == "/":
+                    path = ""
+                for relative_path in relative_excludes:
+                    if f"{path}/{relative_path}" not in include_paths:
+                        selections.add(("exclude", f"{path}/{relative_path}"))
+                    selections.add(("exclude", f"{path}/**/{relative_path}"))
+
+        # Identify contradictory specifications.
+        include_paths = set(p for o, p in selections if o == "include")
+        exclude_paths = set(p for o, p in selections if o == "exclude")
+        conflicts = include_paths & exclude_paths
+        for conflict_path in list(conflicts):
+            if conflict_path.endswith("/**"):
+                # This would be the automatically-added include for a folder,
+                # which should give way to a more-directly specified exclude.
+                selections.remove(("include", conflict_path))
+                conflicts.remove(conflict_path)
+        if conflicts:
+            # XXX: Preferably, the config GUI would also alert the user about this.
+            raise ValueError(f"a path is both included and excluded: {conflicts}")
+
+        # Sort in reverse so that the more specific path rules are given first.
+        # For the sort key, replace wildcard characters to give them low sort
+        # values, corresponding to them being least specific.  For example,
+        # "/home/user" is more specific than "/home/*".
+        selections = sorted(
+            selections,
+            key=lambda item: item[1].replace("**", "\x00").translate(str.maketrans({
+                "*": "\x01",
+                "?": "\x02",
+                "[": "\x03",
+            })),
+            reverse=True,
+        )
+
+        print("\n" + "\n  : ".join(f"{o} {p}" for o, p in selections))
+
+        return selections
+
     def rsyncExclude(self, excludeFolders=None):
         """Format exclude list for rsync.
 

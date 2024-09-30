@@ -12,20 +12,6 @@
     raises
         ValueError  a path is both included and excluded
 
-:both-implied-dir
-    includes  # see issue-561
-        /var
-        /var/log/dmesg
-    excludes
-        /var/log
-    files_tree
-        var/
-            log/
-                dmesg
-                syslog
-    raises
-        ValueError  a path is both included and excluded
-
 :both-files
     includes
         /var

@@ -11,8 +11,7 @@ from test import filetree
 from test.logging import log
 
 
-
-def params_for_cases(cases_file):
+def params_for_cases(cases_file, selections_modes):
     """Provide data for `test_rsyncSuffix*`.
 
     This parses a text file named by `cases_file`, e.g. "selection_cases", to
@@ -22,55 +21,63 @@ def params_for_cases(cases_file):
 
     params = []
 
-    # Each case starts with a colon immediately following a newline.
-    for case in (c for c in cases.split("\n:") if c.strip()):
-        # The remainder of the line starting with a colon is the case_name,
-        # which helps identify the test.
-        case_name, rest = case.split("\n", 1)
+    for selections_mode in selections_modes:
+        # Each case starts with a colon immediately following a newline.
+        for case in (c for c in cases.split("\n:") if c.strip()):
+            # The remainder of the line starting with a colon is the case_name,
+            # which helps identify the test.
+            case_name, rest = case.split("\n", 1)
 
-        # A trailing word on the case_name line that can skip the test.
-        if "SKIP" in case_name:
-            continue
+            # A trailing word on the case_name line that can skip the test.
+            if "SKIP" in case_name:
+                continue
 
-        # Remove trailing comments from the body of the case text.
-        rest = "".join(line.split("#")[0].rstrip() + "\n" for line in rest.splitlines())
+            # Remove trailing comments from the body of the case text.
+            rest = "".join(line.split("#")[0].rstrip() + "\n" for line in rest.splitlines())
 
-        # Make a dictionary from the body of the case text.
-        specs = dict(
-            re.findall(
-                r"(\w+)\n((?: .*\n)*)",
-                textwrap.dedent(rest),
+            # Make a dictionary from the body of the case text.
+            specs = dict(
+                re.findall(
+                    r"(\w+)\n((?: .*\n)*)",
+                    textwrap.dedent(rest),
+                )
             )
-        )
 
-        if "expected_tree" in specs:
-            expected = filetree.normal(specs["expected_tree"])
-        elif "raises" in specs:
-            expected_exception, expected_message = specs["raises"].split(None, 1)
-            # Replace the string, e.g. "ValueError", with what it names.
-            expected_exception = {**__builtins__, **globals()}[expected_exception]
-            expected_message = expected_message.strip()
-            expected = expected_exception, expected_message
+            if "expected_tree" in specs:
+                expected = filetree.normal(specs["expected_tree"])
+            elif "raises" in specs:
+                expected_exception, expected_message = specs["raises"].split(None, 1)
+                # Replace the string, e.g. "ValueError", with what it names.
+                expected_exception = {**__builtins__, **globals()}[expected_exception]
+                expected_message = expected_message.strip()
+                expected = expected_exception, expected_message
 
-        params.append(
-            pytest.param(
-                textwrap.dedent(specs["includes"]).splitlines(),
-                textwrap.dedent(specs["excludes"]).splitlines(),
-                filetree.normal(specs["files_tree"]),
-                expected,
-                id=case_name,
+            params.append(
+                pytest.param(
+                    textwrap.dedent(specs["includes"]).splitlines(),
+                    textwrap.dedent(specs["excludes"]).splitlines(),
+                    filetree.normal(specs["files_tree"]),
+                    expected,
+                    selections_mode,
+                    id=f"{selections_mode}:{case_name}",
+                )
             )
-        )
 
     return params
 
 
 @pytest.mark.parametrize(
-    "includes, excludes, files_tree, expected_tree",
-    params_for_cases("selection_cases"),
+    "includes, excludes, files_tree, expected_tree, selections_mode",
+    params_for_cases("selection_cases", ["original", "sorted"]),
 )
 def test_rsyncSuffix(
-    includes, excludes, files_tree, expected_tree, tmp_path, bit_snapshot
+    includes,
+    excludes,
+    files_tree,
+    expected_tree,
+    selections_mode,
+    tmp_path,
+    bit_snapshot,
 ):
     includes, excludes = prepend_paths(tmp_path, includes, excludes)
 
@@ -84,6 +91,8 @@ def test_rsyncSuffix(
 
     bit_snapshot.config.setExclude(bit_snapshot.config.exclude() + excludes)
     log(f"{bit_snapshot.config.exclude() = }")
+
+    bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
     bit_snapshot.backup()
 
@@ -107,11 +116,17 @@ def test_rsyncSuffix(
 
 
 @pytest.mark.parametrize(
-    "includes, excludes, files_tree, expected",
-    params_for_cases("selection_raise_cases"),
+    "includes, excludes, files_tree, expected, selections_mode",
+    params_for_cases("selection_raise_cases", ["sorted"]),
 )
 def test_rsyncSuffix__raises(
-    includes, excludes, files_tree, expected, tmp_path, bit_snapshot
+    includes,
+    excludes,
+    files_tree,
+    expected,
+    selections_mode,
+    tmp_path,
+    bit_snapshot,
 ):
     includes, excludes = prepend_paths(tmp_path, includes, excludes)
 
@@ -127,6 +142,8 @@ def test_rsyncSuffix__raises(
 
     bit_snapshot.config.setExclude(bit_snapshot.config.exclude() + excludes)
     log(f"{bit_snapshot.config.exclude() = }")
+
+    bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
     with pytest.raises(expected_exception, match=expected_message + ":.*"):
         bit_snapshot.backup()

@@ -123,3 +123,46 @@
                 .ssh/
                     config
                 .gitignore
+
+:various  original-fails
+    includes
+        /
+        /var
+        /var/log/keep
+        /var/log/keep/bar.log
+        /var/log/special.bak
+        /var/log/keep/x/x2
+    excludes
+        /var/log/**         # With original strategy, this supersedes the more specific includes above.
+        [a-c]ar.log
+        keep/ba*.log
+        *.bak
+        /var/log/keep/x/**
+    files_tree
+        var/
+            log/
+                keep/
+                    more/
+                        bar.log.bak
+                    x/
+                        x1
+                        x2
+                    bar.log
+                    baz.log
+                    car.log
+                    foo.log
+                    foo.log.bak
+                special.bak
+                syslog
+        root_file
+    expected_tree
+        var/
+            log/
+                keep/
+                    more/
+                    x/
+                        x2
+                    bar.log
+                    foo.log
+                special.bak
+        root_file

@@ -1359,6 +1359,8 @@ class Snapshots:
 
         self.setTakeSnapshotMessage(0, _('Taking snapshot'))
 
+        self._rsync_cmd_args = cmd
+
         # run rsync
         proc = tools.Execute(cmd,
                              # TODO

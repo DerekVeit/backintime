@@ -18,7 +18,7 @@
     includes
         /var
     excludes
-        var/*
+        /var/*
     files_tree
         var/
             log/

@@ -2237,12 +2237,6 @@ class Snapshots:
         could be eliminated too by getting it from self.config here just as the
         excludes are.
         """
-        # Create exclude patterns string
-        rsync_exclude = self.rsyncExclude(excludeFolders)
-
-        # Create include patterns list
-        rsync_include, rsync_include2 = self.rsyncInclude(includeFolders)
-
         encode = self.config.ENCODE
 
         ret = ['--chmod=Du+wx']
@@ -2253,13 +2247,22 @@ class Snapshots:
                 encode.exclude(self.config._MOUNT_ROOT)
             )
         ])
-        # TODO: fix bug #561:
-        # after rsync_exclude we need to explicitly include files inside
-        # excluded folders, recursive exclude folder-content again and finally
-        # add the rest from rsync_include2
-        ret.extend(rsync_include)
-        ret.extend(rsync_exclude)
-        ret.extend(rsync_include2)
+        if getattr(self.config, "SELECTIONS_MODE") == "sorted":
+            # This is ignoring the includeFolders and excludeFolders arguments.
+            ret.extend([f"--{option}={path}" for option, path in self.pathSelections()])
+        else:
+            rsync_exclude = self.rsyncExclude(excludeFolders)
+            rsync_include, rsync_include2 = self.rsyncInclude(includeFolders)
+
+            # TODO: fix bug #561:
+            # after rsync_exclude we need to explicitly include files inside excluded
+            # folders, recursive exclude folder-content again and finally add the
+            # rest from rsync_include2
+            ret.extend(rsync_include)
+            ret.extend(rsync_exclude)
+            ret.extend(rsync_include2)
+
+        # Make exclusion rather than inclusion the default.
         ret.append('--exclude=*')
         ret.append(encode.chroot)
 

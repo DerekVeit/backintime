@@ -62,27 +62,29 @@
             lib/
                 log
 
-:issue-561 SKI
+:issue-561  original-fails
     includes
         /var
-        /var/log/dmesg  # Causes everything else in /var/log/ to also get included.
+        /var/log/bar    # original: causes everything else in /var/log/ to also get included.
     excludes
-        /var/log/**
+        /var/log        # sorted: this is treated as /var/log/** to allow the include.
     files_tree
         var/
             lib/
                 log
             log/
+                bar/
+                    bar.log
                 foo/
                     foo.log
-                dmesg
                 syslog
     expected_tree
         var/
             lib/
                 log
             log/
-                dmesg
+                bar/
+                    bar.log
 
 :issue-1419-closed
     includes
@@ -99,7 +101,7 @@
             Temp/
             Temperature
 
-:issue-1420 SKI
+:issue-1420  original-fails
     includes
         /home
         /home/xin/.gitignore

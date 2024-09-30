@@ -20,14 +20,13 @@ directories like this:
 This is to help make backup tests that are easy to read and write and are clear
 in their expectations and results.
 
-Key features:
+Features of a tree:
 - Directories are distinguished by a trailing slash
-- Indentation increment must be 4 spaces
 - Within a directory, names must be sorted with directories before files
+- Indentation increment must be 4 spaces
 - Initial indentation and leading and trailing whitespace are arbitrary
-- Empty directories are allowed
 
-Main functions:
+Useful functions:
 - files_from_tree: Create a file structure from a tree representation
 - tree_from_files: Generate a tree representation from an existing file structure
 - normal: Normalize the indentation and whitespace of a tree string

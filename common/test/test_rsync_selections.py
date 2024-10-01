@@ -106,6 +106,7 @@ def test_rsyncSuffix(
 
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
+    # act
     bit_snapshot.backup()
 
     if hasattr(bit_snapshot, "_rsync_cmd_args"):
@@ -160,6 +161,7 @@ def test_rsyncSuffix__raises(
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
     with pytest.raises(expected_exception, match=expected_message + ":.*"):
+        # act
         bit_snapshot.backup()
 
 
@@ -201,6 +203,7 @@ def test_rsyncSuffix__root(
 
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
+    # act
     bit_snapshot.backup()
 
     if hasattr(bit_snapshot, "_rsync_cmd_args"):

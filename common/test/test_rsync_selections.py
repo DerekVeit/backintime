@@ -1,17 +1,21 @@
+from collections.abc import Generator
 import os
 import pathlib
 import re
 import textwrap
+from typing import Any
 
 import pytest
+from _pytest.mark.structures import ParameterSet
 
+import config
 import snapshots
 
 from test import filetree
 from test.logging import log
 
 
-def params_for_cases(cases_file, selections_modes):
+def params_for_cases(cases_file: str, selections_modes: list[str]) -> list[ParameterSet]:
     """Provide data for `test_rsyncSuffix*`.
 
     This parses a text file named by `cases_file`, e.g. "selection_cases", to
@@ -51,12 +55,14 @@ def params_for_cases(cases_file, selections_modes):
                 )
             )
 
+            expected: str | tuple[Any, str] = ""
+
             if "expected_tree" in specs:
                 expected = filetree.normal(specs["expected_tree"])
             elif "raises" in specs:
                 expected_exception, expected_message = specs["raises"].split(None, 1)
                 # Replace the string, e.g. "ValueError", with what it names.
-                expected_exception = {**__builtins__, **globals()}[expected_exception]
+                expected_exception = {**__builtins__, **globals()}[expected_exception]  # type: ignore
                 expected_message = expected_message.strip()
                 expected = expected_exception, expected_message
             else:
@@ -81,14 +87,14 @@ def params_for_cases(cases_file, selections_modes):
     params_for_cases("selection_cases", ["original", "sorted"]),
 )
 def test_rsyncSuffix(
-    includes,
-    excludes,
-    files_tree,
-    expected_tree,
-    selections_mode,
-    tmp_path,
-    bit_snapshot,
-):
+    includes: list[str],
+    excludes: list[str],
+    files_tree: str,
+    expected_tree: str,
+    selections_mode: str,
+    tmp_path: pathlib.Path,
+    bit_snapshot: snapshots.Snapshots,
+) -> None:
     files_root = tmp_path / "files"
     files_root.mkdir()
 
@@ -107,14 +113,14 @@ def test_rsyncSuffix(
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
     # act
-    bit_snapshot.backup()
+    bit_snapshot.backup()  # type: ignore[no-untyped-call]
 
     if hasattr(bit_snapshot, "_rsync_cmd_args"):
         cmd = bit_snapshot._rsync_cmd_args
         log("rsync command arguments:")
         log("\n    ".join(arg for arg in cmd))
 
-    last_snapshot = snapshots.lastSnapshot(bit_snapshot.config)
+    last_snapshot = snapshots.lastSnapshot(bit_snapshot.config)  # type: ignore[no-untyped-call]
 
     try:
         backup_path = next((tmp_path / "snapshots").glob(f"**/{last_snapshot}/backup"))
@@ -133,14 +139,14 @@ def test_rsyncSuffix(
     params_for_cases("selection_raise_cases", ["sorted"]),
 )
 def test_rsyncSuffix__raises(
-    includes,
-    excludes,
-    files_tree,
-    expected,
-    selections_mode,
-    tmp_path,
-    bit_snapshot,
-):
+    includes: list[str],
+    excludes: list[str],
+    files_tree: str,
+    expected: tuple[Any, str],
+    selections_mode: str,
+    tmp_path: pathlib.Path,
+    bit_snapshot: snapshots.Snapshots,
+) -> None:
     files_root = tmp_path / "files"
     files_root.mkdir()
 
@@ -162,10 +168,10 @@ def test_rsyncSuffix__raises(
 
     with pytest.raises(expected_exception, match=expected_message + ":.*"):
         # act
-        bit_snapshot.backup()
+        bit_snapshot.backup()  # type: ignore[no-untyped-call]
 
 
-def prepend_paths(tmp_path, paths):
+def prepend_paths(tmp_path: pathlib.Path, paths: list[str]) -> Generator[str, None, None]:
     """Prefix any absolute paths with the temporary directory path."""
     for path in paths:
         if path == "/":
@@ -181,16 +187,15 @@ def prepend_paths(tmp_path, paths):
     params_for_cases("selection_root_cases", ["original", "sorted"]),
 )
 def test_rsyncSuffix__root(
-    includes,
-    excludes,
-    files_tree,
-    expected_tree,
-    selections_mode,
-    tmp_path,
-    bit_snapshot,
-):
+    includes: list[str],
+    excludes: list[str],
+    files_tree: str,
+    expected_tree: str,
+    selections_mode: str,
+    tmp_path: pathlib.Path,
+    bit_snapshot: snapshots.Snapshots,
+) -> None:
     """Having the root directory `/` as an included directory."""
-
 
     files_root = "/"
 
@@ -204,14 +209,14 @@ def test_rsyncSuffix__root(
     bit_snapshot.config.SELECTIONS_MODE = selections_mode
 
     # act
-    bit_snapshot.backup()
+    bit_snapshot.backup()  # type: ignore[no-untyped-call]
 
     if hasattr(bit_snapshot, "_rsync_cmd_args"):
         cmd = bit_snapshot._rsync_cmd_args
         log("rsync command arguments:")
         log("\n    ".join(arg for arg in cmd))
 
-    last_snapshot = snapshots.lastSnapshot(bit_snapshot.config)
+    last_snapshot = snapshots.lastSnapshot(bit_snapshot.config)  # type: ignore[no-untyped-call]
 
     try:
         backup_path = next((tmp_path / "snapshots").glob(f"**/{last_snapshot}/backup"))
@@ -225,7 +230,11 @@ def test_rsyncSuffix__root(
     assert results_tree == expected_tree
 
 
-def update_config(config, include_paths, exclude_paths):
+def update_config(
+    config: config.Config,
+    include_paths: list[str],
+    exclude_paths: list[str],
+) -> None:
     # Partly adapted from MainWindow.btnAddIncludeClicked
     includes = []
 
@@ -235,5 +244,5 @@ def update_config(config, include_paths, exclude_paths):
         else:
             includes.append((item, 1))
 
-    config.setInclude(includes)
-    config.setExclude(exclude_paths)
+    config.setInclude(includes)  # type: ignore[no-untyped-call]
+    config.setExclude(exclude_paths)  # type: ignore[no-untyped-call]

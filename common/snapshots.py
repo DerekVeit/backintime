@@ -2249,7 +2249,7 @@ class Snapshots:
                 encode.exclude(self.config._MOUNT_ROOT)
             )
         ])
-        if getattr(self.config, "SELECTIONS_MODE") == "sorted":
+        if getattr(self.config, "SELECTIONS_MODE", "") == "sorted":
             # This is ignoring the includeFolders and excludeFolders arguments.
             ret.extend([f"--{option}={path}" for option, path in self.pathSelections()])
         else:

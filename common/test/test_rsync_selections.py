@@ -3,7 +3,7 @@ import os
 import pathlib
 import re
 import textwrap
-from typing import Any
+from typing import Any, Union
 
 import pytest
 from _pytest.mark.structures import ParameterSet
@@ -55,7 +55,7 @@ def params_for_cases(cases_file: str, selections_modes: list[str]) -> list[Param
                 )
             )
 
-            expected: str | tuple[Any, str] = ""
+            expected: Union[str, tuple[Any, str]] = ""
 
             if "expected_tree" in specs:
                 expected = filetree.normal(specs["expected_tree"])

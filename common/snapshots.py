@@ -2280,7 +2280,7 @@ class Snapshots:
         is applied.  The order of the options matters when there is both an
         include rule and an exclude rule with a pattern that would match.
 
-        The items are reverse sorted so that rules fro more-specific paths
+        The items are reverse sorted so that rules for more-specific paths
         come first, e.g.:
             /var/log/My App
             /var/log/My*

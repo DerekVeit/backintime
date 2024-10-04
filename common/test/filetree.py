@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 import textwrap
-from typing import Iterable
+from typing import Iterable, Union
 
 
 """
@@ -41,7 +41,7 @@ An example of how this might be used to test a backup procedure:
 """
 
 
-def files_from_tree(parent_dir: str | Path, tree: str) -> None:
+def files_from_tree(parent_dir: Union[str, Path], tree: str) -> None:
     """Create in `parent_dir` the structure described by `tree`."""
     dir_paths, file_paths = parse_tree(parent_dir, tree)
 
@@ -52,7 +52,7 @@ def files_from_tree(parent_dir: str | Path, tree: str) -> None:
         path.touch()
 
 
-def parse_tree(parent_dir: str | Path, tree: str) -> tuple[list[Path], list[Path]]:
+def parse_tree(parent_dir: Union[str, Path], tree: str) -> tuple[list[Path], list[Path]]:
     """Return the paths described by `tree` in `parent_dir`."""
     parent_path = Path(parent_dir)
 
@@ -139,7 +139,7 @@ def split_indent(text: str) -> tuple[str, str]:
     return indent, remainder
 
 
-def tree_from_files(parent_dir: str | Path) -> str:
+def tree_from_files(parent_dir: Union[str, Path]) -> str:
     """Return a tree describing the contents of `parent_dir`."""
     parent_path = Path(parent_dir)
     initial_depth = len(parent_path.parts)

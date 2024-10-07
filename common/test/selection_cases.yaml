@@ -174,3 +174,36 @@ various:
                     foo.log
                 special.bak
         root_file
+
+fs-root-exclude-all:
+    flags:
+        - original_fails
+        - fs_root       # Cannot simulate "/" in a prefixed temp dir for this one.
+    includes:
+        - /
+        - /etc/issue
+    excludes:
+        - /**
+        - '*.pyc'
+    files_tree: |
+        NONE
+    expected_tree: |
+        etc/
+            issue
+
+fs-root-exclude-root:
+    flags:
+        - sorted_only   # With original selection mode, it would try to copy everything.
+        - original_fails
+        - fs_root       # Cannot simulate "/" in a prefixed temp dir for this one.
+    includes:
+        - /
+        - /etc/issue
+    excludes:
+        - /             # This has no effect in the original selection mode, so /** would be included.
+        - '*.pyc'
+    files_tree: |
+        NONE
+    expected_tree: |
+        etc/
+            issue

@@ -60,18 +60,21 @@ class RsyncSuffixTests(unittest.TestCase):
 
         if selections_mode == 'original' and 'original_fails' in flags:
             self.skipTest('expected to fail with original strategy')
+        elif selections_mode != 'sorted' and 'sorted_only' in flags:
+            self.skipTest('only applicable for the sorted strategy')
 
         temp_dir = get_temp_dir(self)
         bit_config = get_bit_config(temp_dir)
         bit_snapshot = snapshots.Snapshots(bit_config)  # type: ignore[no-untyped-call]
 
-        files_root = temp_dir / 'files'
-        files_root.mkdir()
-
-        includes = list(prepend_paths(files_root, includes))
-        excludes = list(prepend_paths(files_root, excludes))
-
-        filetree.files_from_tree(files_root, files_tree)
+        if 'fs_root' in flags:
+            files_root = Path("/")
+        else:
+            files_root = temp_dir / 'files'
+            files_root.mkdir()
+            includes = list(prepend_paths(files_root, includes))
+            excludes = list(prepend_paths(files_root, excludes))
+            filetree.files_from_tree(files_root, files_tree)
 
         update_config(bit_config, includes, excludes)
         log(f'{bit_config.include() = }')  # type: ignore[no-untyped-call]

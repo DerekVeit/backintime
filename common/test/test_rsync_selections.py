@@ -124,7 +124,6 @@ class RsyncSuffixTests(unittest.TestCase):
             'ValueError': ValueError,
         }[exception_type_name]
 
-
         temp_dir = get_temp_dir(self)
         bit_config = get_bit_config(temp_dir)
         bit_snapshot = snapshots.Snapshots(bit_config)  # type: ignore[no-untyped-call]

@@ -96,6 +96,55 @@ class RsyncSuffixTests(unittest.TestCase):
 
         self.assertEqual(results_tree, expected_tree)
 
+    @ddt.file_data('selection_raise_cases.yaml')
+    def test_rsyncSuffix__raises(
+        self,
+        includes: list[str],
+        excludes: list[str],
+        files_tree: str,
+        exception_type_name: str,
+        expected_message: str,
+    ) -> None:
+        """Verify that running `Snapshots.backup` raises an exception.
+
+        Args:
+            includes: The list of included paths.
+            excludes: The list of excluded paths.
+            files_tree: The tree of files available to the backup.
+            exception_type_name: e.g. "ValueError".
+            expected_message: e.g. "a path is both included and excluded".
+        """
+        expected_exception = {
+            'ValueError': ValueError,
+        }[exception_type_name]
+
+
+        temp_dir = get_temp_dir(self)
+        bit_config = get_bit_config(temp_dir)
+        bit_snapshot = snapshots.Snapshots(bit_config)  # type: ignore[no-untyped-call]
+
+        files_root = temp_dir / "files"
+        files_root.mkdir()
+
+        includes = list(prepend_paths(files_root, includes))
+        excludes = list(prepend_paths(files_root, excludes))
+
+        files_tree = filetree.normal(files_tree)
+
+        filetree.files_from_tree(files_root, files_tree)
+
+        update_config(bit_config, includes, excludes)
+        log(f"{bit_config.include() = }")  # type: ignore[no-untyped-call]
+        log(f"{bit_config.exclude() = }")  # type: ignore[no-untyped-call]
+
+        bit_config.SELECTIONS_MODE = 'sorted'  # type: ignore[attr-defined]
+
+        with self.assertRaises(expected_exception) as cm:
+            # act
+            bit_snapshot.backup()  # type: ignore[no-untyped-call]
+
+        self.assertRegex(cm.exception.args[0], expected_message + ":.*")
+
 
 def get_temp_dir(testcase: unittest.TestCase) -> Path:
     temp_dir = tempfile.mkdtemp(prefix='backintime_testing_')

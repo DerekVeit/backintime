@@ -1,6 +1,6 @@
 from collections.abc import Generator
 import os
-import pathlib
+from pathlib import Path
 import re
 import textwrap
 from typing import Any, Union
@@ -21,7 +21,7 @@ def params_for_cases(cases_file: str, selections_modes: list[str]) -> list[Param
     This parses a text file named by `cases_file`, e.g. "selection_cases", to
     provide a list of pytest `ParameterSet` objects.
     """
-    cases = (pathlib.Path(__file__).parent / cases_file).read_text()
+    cases = (Path(__file__).parent / cases_file).read_text()
 
     params = []
 
@@ -92,7 +92,7 @@ def test_rsyncSuffix(
     files_tree: str,
     expected_tree: str,
     selections_mode: str,
-    tmp_path: pathlib.Path,
+    tmp_path: Path,
     bit_snapshot: snapshots.Snapshots,
 ) -> None:
     files_root = tmp_path / "files"
@@ -144,7 +144,7 @@ def test_rsyncSuffix__raises(
     files_tree: str,
     expected: tuple[Any, str],
     selections_mode: str,
-    tmp_path: pathlib.Path,
+    tmp_path: Path,
     bit_snapshot: snapshots.Snapshots,
 ) -> None:
     files_root = tmp_path / "files"
@@ -171,7 +171,7 @@ def test_rsyncSuffix__raises(
         bit_snapshot.backup()  # type: ignore[no-untyped-call]
 
 
-def prepend_paths(tmp_path: pathlib.Path, paths: list[str]) -> Generator[str, None, None]:
+def prepend_paths(tmp_path: Path, paths: list[str]) -> Generator[str, None, None]:
     """Prefix any absolute paths with the temporary directory path."""
     for path in paths:
         if path == "/":
@@ -192,7 +192,7 @@ def test_rsyncSuffix__root(
     files_tree: str,
     expected_tree: str,
     selections_mode: str,
-    tmp_path: pathlib.Path,
+    tmp_path: Path,
     bit_snapshot: snapshots.Snapshots,
 ) -> None:
     """Having the root directory `/` as an included directory."""

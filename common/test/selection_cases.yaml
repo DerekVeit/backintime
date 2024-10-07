@@ -63,7 +63,8 @@ exclude-absolute-dir:
                 log
 
 issue-561:
-    original_fails: true
+    flags:
+        - original_fails
     includes:
         - /var
         - /var/log/bar    # original: causes everything else in /var/log/ to also get included.
@@ -103,9 +104,10 @@ issue-1419-closed:
             Temperature
 
 issue-1420:
-    original_fails: true
-    # With original strategy, /home/xin/.ssh gets backed up as it should,
-    # but /home/xin/.gitignore doesn't.
+    flags:
+        - original_fails
+            # With original strategy, /home/xin/.ssh gets backed up as it should,
+            # but /home/xin/.gitignore doesn't.
     includes:
         - /home
         - /home/xin/.gitignore
@@ -129,7 +131,8 @@ issue-1420:
                 .gitignore
 
 various:
-    original_fails: true
+    flags:
+        - original_fails
     includes:
         - /
         - /var

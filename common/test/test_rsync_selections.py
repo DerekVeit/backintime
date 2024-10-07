@@ -39,7 +39,7 @@ class RsyncSuffixTests(unittest.TestCase):
         excludes: list[str],
         files_tree: str,
         expected_tree: str,
-        original_fails: bool = False,
+        flags: Union[list[str], None] = None,
     ) -> None:
         """Verify that running `Snapshots.backup` copies the right files.
 
@@ -52,7 +52,10 @@ class RsyncSuffixTests(unittest.TestCase):
             original_fails: Whether the test is expected to fail with the
                 original strategy.
         """
-        if selections_mode == 'original' and original_fails:
+        if flags is None:
+            flags = []
+
+        if selections_mode == 'original' and 'original_fails' in flags:
             self.skipTest('expected to fail with original strategy')
 
         temp_dir = get_temp_dir(self)

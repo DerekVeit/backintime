@@ -55,6 +55,9 @@ class RsyncSuffixTests(unittest.TestCase):
         if flags is None:
             flags = []
 
+        files_tree = filetree.normal(files_tree)
+        expected_tree = filetree.normal(expected_tree)
+
         if selections_mode == 'original' and 'original_fails' in flags:
             self.skipTest('expected to fail with original strategy')
 
@@ -67,9 +70,6 @@ class RsyncSuffixTests(unittest.TestCase):
 
         includes = list(prepend_paths(files_root, includes))
         excludes = list(prepend_paths(files_root, excludes))
-
-        files_tree = filetree.normal(files_tree)
-        expected_tree = filetree.normal(expected_tree)
 
         filetree.files_from_tree(files_root, files_tree)
 

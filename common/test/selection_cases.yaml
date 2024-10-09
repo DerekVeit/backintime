@@ -1,4 +1,22 @@
 
+# Each top-level key names a test case for test_rsync_selections.py
+
+# Normal properties:
+#   includes: paths to be configured as included in the backup
+#   excludes: paths to be configured as excluded in the backup
+#   files_tree: the files to be made available for the backup (see filetree.py)
+#   expected_tree: the files that should be copied for the backup
+
+# Properties for cases expecting an exception to be raised:
+#   exception_type_name
+#   expected_message
+
+# A property to mark special cases:
+#   flags:
+#       "original_fails": The case fails for the "original" strategy.
+#       "sorted_only": The case is only applicable for the "sorted" strategy.
+#       "fs_root": The case needs to use / as an included path.
+
 simple:
     includes:
         - /var
@@ -207,3 +225,42 @@ fs-root-exclude-root:
     expected_tree: |
         etc/
             issue
+
+raise-contradiction:
+    flags:
+        - original_fails
+    includes:
+        - /var
+    excludes:
+        - /var
+    files_tree: |
+        var/
+            log/
+                dmesg
+                syslog
+    expected_tree: |
+        NONE
+    exception_type_name:
+        ValueError
+    expected_message:
+        a path is both included and excluded
+
+raise-contradiction-file:
+    flags:
+        - original_fails
+    includes:
+        - /var
+        - /var/log/dmesg
+    excludes:
+        - /var/log/dmesg
+    files_tree: |
+        var/
+            log/
+                dmesg
+                syslog
+    expected_tree: |
+        NONE
+    exception_type_name:
+        ValueError
+    expected_message:
+        a path is both included and excluded

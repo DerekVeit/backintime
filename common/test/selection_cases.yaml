@@ -17,7 +17,7 @@
 #       "sorted_only": The case is only applicable for the "sorted" strategy.
 #       "fs_root": The case needs to use / as an included path.
 
-simple:
+single-include-dir-without-excludes:
     includes:
         - /var
     excludes: []
